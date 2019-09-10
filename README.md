@@ -1,1 +1,1 @@
-# scart1
+# Skeleton project for Swagger

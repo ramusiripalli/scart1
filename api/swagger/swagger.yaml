@@ -1,0 +1,111 @@
+swagger: "2.0"
+info:
+  version: "0.0.1"
+  title: Scart
+# during dev, should point to your local machine
+host: localhost:10010
+# basePath prefixes all resource paths 
+basePath: /
+# 
+schemes:
+  # tip: remove http to make production-grade
+  - http
+  - https
+# format of bodies a client can send (Content-Type)
+consumes:
+  - application/json
+# format of the responses to the client (Accepts)
+produces:
+  - application/json
+paths:
+  /vendorLogin:
+    # binds a127 app logic to a route
+    x-swagger-router-controller: scart
+    post:
+      description: vendorLogin
+      # used as the method name of the controller
+      operationId: vendorLogin
+      parameters:
+        - name: data
+          in: body
+          description: Vendorlogin
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/vendorLoginRequest"
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/vendorLoginResponse"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+            
+  /userLogin:
+    # binds a127 app logic to a route
+    x-swagger-router-controller: scart
+    post:
+      description: userLogin
+      # used as the method name of the controller
+      operationId: userLogin
+      parameters:
+        - name: data
+          in: body
+          description: userLogin
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/userLoginRequest"
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/userLoginResponse"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+            
+  /swagger:
+    x-swagger-pipe: swagger_raw
+# complex objects have schema definitions
+definitions:
+  vendorLoginRequest:
+   
+    properties:
+      id:
+        type: string
+      password:
+        type: string  
+        
+  vendorLoginResponse:
+    required:
+      - message
+    properties:
+      message:
+        type: string 
+  userLoginRequest:
+   
+    properties:
+      id:
+        type: string
+      password:
+        type: string  
+        
+  userLoginResponse:
+    required:
+      - message
+    properties:
+      message:
+        type: string      
+        
+  ErrorResponse:
+    required:
+      - message
+    properties:
+      message:
+        type: string

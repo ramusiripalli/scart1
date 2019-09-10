@@ -1,0 +1,77 @@
+
+function vendorLogin(req, res) {
+
+    var responseVendorLogin = {};
+    var userId = req.body.id;
+    var pwd = req.body.password;
+    var cat;
+    var name;
+
+    function checkLogin() {
+        return new Promise((resolve, reject) => {
+            var queryLogin = "select pwd from vendorlogin where id='" + userId + "'";
+            client.execute(queryLogin)
+                .then(ramu => {
+                    console.log("ramu->" + JSON.stringify(ramu));
+                    if (ramu.rowLength < 1) {
+                        reject("User Not Registered, Dude!");
+                    } else {
+                        var pwdTemp = ramu.rows[0].pwd;
+                        if (pwd == pwdTemp) {
+                            resolve();
+                        } else {
+                            reject("Invalid Password, Dude!")
+                        }
+                    }
+                })
+                .catch(err => {
+                    console.log("Error in checking for login->" + err);
+                    reject("Error in Checking for Login");
+                })
+        })
+    }
+
+    function getProducts() {
+        return new Promise((resolve, reject) => {
+            var getProductQuery = "select name,categories from vendor where id='" + userId + "'";
+            client.execute(getProductQuery)
+                .then(dolly => {
+                    if (dolly.rowLength < 1) {
+                        reject("No Categories, Add Some Category first, Dude!")
+                    } else {
+                        cat = dolly.rows[0].categories;
+                        name = dolly.rows[0].name;
+                        resolve();
+                    }
+                })
+                .catch(err => {
+                    console.log("Error in Getting Products->" + err);
+                    reject("Error in getting Products");
+                })
+
+        })
+    }
+
+    function sendResponse() {
+        return new Promise((resolve, reject) => {
+            responseVendorLogin.categories = cat;
+            responseVendorLogin.name = name;
+            responseVendorLogin.status = "success";
+            res.json(responseVendorLogin);
+            cat=null;
+            name=null;
+            resolve();
+
+        })
+    }
+
+    checkLogin()
+        .then(getProducts)
+        .then(sendResponse)
+        .catch(err => {
+            console.log("Error in vendorLogin->" + err);
+            responseVendorLogin.status = err;
+            res.json(responseVendorLogin);
+        })
+
+}
